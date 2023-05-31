@@ -1,36 +1,23 @@
-import random
+import os
+import subprocess
 
-MAP_SIZE = 10
-
-PLAYER_SYMBOL = "■"
-ENEMY_SYMBOL = "E"
-
-player_x = random.randint(0, MAP_SIZE - 1)
-player_y = random.randint(0, MAP_SIZE - 1)
-
-enemy_x = random.randint(0, MAP_SIZE - 1)
-enemy_y = random.randint(0, MAP_SIZE - 1)
-
-while True:
-    game_map = [["."] * MAP_SIZE for _ in range(MAP_SIZE)]
-    game_map[player_y][player_x] = PLAYER_SYMBOL
-    game_map[enemy_y][enemy_x] = ENEMY_SYMBOL
-
-    for row in game_map:
-        print(" ".join(row))
+def clone_repository():
+    # Prompt the user for the repository URL
+    repository_url = input("Enter the GitHub repository URL: ")
     
-    user_input = input("Enter a move (W/A/S/D): ").upper()
+    # Prompt the user for the destination path
+    clone_destination = input("Enter the destination path for cloning: ")
 
-    if user_input == "W":
-        player_y -= 1
-    elif user_input == "A":
-        player_x -= 1
-    elif user_input == "S":
-        player_y += 1
-    elif user_input == "D":
-        player_x += 1
+    # Check if the destination directory already exists
+    if os.path.exists(clone_destination):
+        print(f"Destination directory '{clone_destination}' already exists.")
+        return
 
-    if player_x == enemy_x and player_y == enemy_y:
-        game_map[enemy_y][enemy_x] = "."  # Remove enemy from the map
-        print("You Win!")
-        break
+    # Run the git clone command
+    try:
+        subprocess.run(["git", "clone", repository_url, clone_destination], check=True)
+        print("Repository cloned successfully.")
+    except subprocess.CalledProcessError as e:
+        print(f"An error occurred while cloning the repository: {e}")
+
+clone_repository()
